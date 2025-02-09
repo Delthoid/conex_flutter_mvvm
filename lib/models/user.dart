@@ -20,6 +20,8 @@ class User {
     DateTime? createdAt
   }) : createdAt = createdAt ?? DateTime.now();
 
+  factory User.empty() => User(userId: '', userName: '', firstName: '', avatarUrl: '');
+
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
   Map<String, dynamic> toJson() => _$UserToJson(this);
