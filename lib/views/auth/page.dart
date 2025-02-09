@@ -1,7 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:async';
+
+import 'package:conex_flutter_mvvm/services/client.dart';
 import 'package:conex_flutter_mvvm/utils/dialogs.dart';
+import 'package:conex_flutter_mvvm/utils/snackbar.dart';
 import 'package:conex_flutter_mvvm/viewmodels/auth/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthPage extends ConsumerStatefulWidget {
   const AuthPage({super.key});
@@ -12,10 +20,28 @@ class AuthPage extends ConsumerStatefulWidget {
 
 class _AuthPageState extends ConsumerState<AuthPage> {
 
+  late final StreamSubscription<AuthState> _authListener;
+
   final formKey = GlobalKey<FormState>();
 
   final email = TextEditingController();
   final password = TextEditingController();
+
+  @override
+  void initState() {
+    _authListener = supabase.auth.onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.signedIn || data.session?.user != null) {
+        context.pushReplacement('/home');
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _authListener.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,11 +118,24 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                         child: FilledButton(
                           onPressed: () async {
                             if (formKey.currentState?.validate() ?? false) {
-                              showLoadingDialog(
+                              AppDialogs.showLoadingDialog(
                                 context,
                                 barrierDismissible: false,
                                 content: Text('Signing Up')
                               );
+
+                              try {
+                                await ref.read(authViewModelStateNotifierProvider)
+                                .signUp(email: email.text, password: password.text);
+                                AppSnackbar.showSuccess(context, message: 'Sign up successful');
+                              } on AuthApiException catch (e) {
+                                AppSnackbar.showError(context, message: e.message);
+                              }
+                              catch (e) {
+                                AppSnackbar.showError(context, message: e.toString());
+                              } finally {
+                                Navigator.pop(context);
+                              }
                             }
                           },
                           child: Text('Register'),

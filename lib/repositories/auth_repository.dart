@@ -22,7 +22,7 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      return await _authService.signIn(email: email, password: password);
+      return await _authService.signUp(email: email, password: password);
     } catch (e) {
       rethrow;
     }

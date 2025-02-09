@@ -14,7 +14,7 @@ class AuthViewModel {
     required String email,
     required String password,
   }) async {
-    final result = await _authRepository.signIn(email: email, password: password);
+    final result = await _authRepository.signUp(email: email, password: password);
 
     return result;
   }
