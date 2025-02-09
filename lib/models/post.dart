@@ -7,7 +7,7 @@ class Post {
   final String content;
   final DateTime createdAt;
   final String backgroundColor;
-  final int userId;
+  final String userId;
 
   Post({
     required this.content,
@@ -15,4 +15,8 @@ class Post {
     required this.backgroundColor,
     required this.userId,
   });
+
+  factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PostToJson(this);
 }

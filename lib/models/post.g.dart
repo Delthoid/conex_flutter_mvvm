@@ -10,7 +10,7 @@ Post _$PostFromJson(Map<String, dynamic> json) => Post(
       content: json['content'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       backgroundColor: json['backgroundColor'] as String,
-      userId: (json['userId'] as num).toInt(),
+      userId: json['userId'] as String,
     );
 
 Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
